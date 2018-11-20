@@ -23,7 +23,7 @@ EOF
 }
 
 parse_args() {
-  #BINDIR is /usr/local/binunless set be ENV
+  #BINDIR is /usr/local/bin unless set be ENV
   # over-ridden by flag below
 
   BINDIR=${BINDIR:-/usr/local/bin}
