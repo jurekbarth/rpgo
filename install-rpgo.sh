@@ -9,7 +9,7 @@ usage() {
 $this: download go binaries for jurekbarth/rpgo
 
 Usage: $this [-b] bindir [-d] [tag]
-  -b sets bindir or installation directory, Defaults to ./bin
+  -b sets bindir or installation directory, Defaults to /usr/local/bin
   -d turns on debug logging
    [tag] is a tag from
    https://github.com/jurekbarth/rpgo/releases
@@ -23,10 +23,10 @@ EOF
 }
 
 parse_args() {
-  #BINDIR is ./bin unless set be ENV
+  #BINDIR is /usr/local/binunless set be ENV
   # over-ridden by flag below
 
-  BINDIR=${BINDIR:-./bin}
+  BINDIR=${BINDIR:-/usr/local/bin}
   while getopts "b:dh?" arg; do
     case "$arg" in
       b) BINDIR="$OPTARG" ;;
