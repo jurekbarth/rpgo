@@ -67,8 +67,14 @@ func (t *transport) RoundTrip(req *http.Request) (*http.Response, error) {
 	return http.DefaultTransport.RoundTrip(req)
 }
 
+func modifyResponse(res *http.Response) error {
+	res.Header.Add("Access-Control-Allow-Origin", "*")
+	return nil
+}
+
 func main() {
 	targetHost := flag.String("target", "jurekbarth.de", "server you want to proxy")
+	cors := flag.Bool("cors", false, "enable cors")
 	flag.Parse()
 	reverseProxy := httputil.NewSingleHostReverseProxy(&url.URL{
 		Scheme: "https",
@@ -89,6 +95,9 @@ func main() {
 		// Other options
 		Addr:      ":9001",
 		TLSConfig: tlsConfig,
+	}
+	if *cors {
+		reverseProxy.ModifyResponse = modifyResponse
 	}
 
 	http.Handle("/", reverseProxy)
