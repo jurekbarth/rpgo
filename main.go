@@ -73,12 +73,22 @@ func modifyResponse(res *http.Response) error {
 }
 
 func main() {
-	targetHost := flag.String("target", "jurekbarth.de", "server you want to proxy")
+	proxyURL := flag.String("target", "https://jurekbarth.de", "url you want to proxy")
 	cors := flag.Bool("cors", false, "enable cors")
 	flag.Parse()
+	u, err := url.Parse(*proxyURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if u.Scheme == "" {
+		log.Fatal("missing scheme, in proxyUrl: ", *proxyURL)
+	}
+
 	reverseProxy := httputil.NewSingleHostReverseProxy(&url.URL{
-		Scheme: "https",
-		Host:   *targetHost,
+		Scheme: u.Scheme,
+		Host:   u.Host,
+		Path:   u.Path,
 	})
 	reverseProxy.Transport = &transport{}
 
@@ -101,6 +111,6 @@ func main() {
 	}
 
 	http.Handle("/", reverseProxy)
-	fmt.Printf("Proxy https://%v on :9001\n", *targetHost)
+	fmt.Printf("Proxy %v on https://localhost:9001\n", *proxyURL)
 	log.Fatal(server.ListenAndServeTLS("", ""))
 }
