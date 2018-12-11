@@ -20,6 +20,9 @@ archive:
     windows: win32
     386: i386
     amd64: amd64
+  format_overrides:
+  - goos: windows
+    format: zip
 checksum:
   name_template: 'checksums.txt'
 snapshot:
