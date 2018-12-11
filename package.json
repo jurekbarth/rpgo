@@ -1,17 +1,17 @@
 {
   "name": "rpgo",
-  "version": "1.0.6",
+  "version": "1.0.11",
   "description": "## Usage Use `rpgo -target=https://jurekbarth.de` and open `https://localhost:9001`",
   "main": "index.js",
   "scripts": {
     "postinstall": "node install.js"
   },
+  "bin": {
+    "rpgo": "bin/rpgo"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jurekbarth/rpgo.git"
-  },
-  "bin": {
-    "rpgo": "./bin/rpgo"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +21,6 @@
   },
   "homepage": "https://github.com/jurekbarth/rpgo#readme",
   "dependencies": {
-    "go-library": "0.0.9"
+    "go-library": "0.0.10"
   }
 }
