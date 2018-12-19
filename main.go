@@ -74,6 +74,7 @@ func modifyResponse(res *http.Response) error {
 
 func main() {
 	proxyURL := flag.String("target", "https://jurekbarth.de", "url you want to proxy")
+	portFlag := flag.String("port", "7777", "port the proxy should listen on")
 	cors := flag.Bool("cors", false, "enable cors")
 	flag.Parse()
 	u, err := url.Parse(*proxyURL)
@@ -103,7 +104,7 @@ func main() {
 	tlsConfig := &tls.Config{Certificates: []tls.Certificate{cert}}
 	server := http.Server{
 		// Other options
-		Addr:      ":9001",
+		Addr:      ":" + *portFlag,
 		TLSConfig: tlsConfig,
 	}
 	if *cors {
@@ -111,6 +112,6 @@ func main() {
 	}
 
 	http.Handle("/", reverseProxy)
-	fmt.Printf("Proxy %v on https://localhost:9001\n", *proxyURL)
+	fmt.Printf("Proxy %v on https://localhost:%v\n", *proxyURL, *portFlag)
 	log.Fatal(server.ListenAndServeTLS("", ""))
 }
