@@ -1,6 +1,6 @@
 {
   "name": "rpgo",
-  "version": "1.0.11",
+  "version": "2.0.0",
   "description": "## Usage Use `rpgo -target=https://jurekbarth.de` and open `https://localhost:9001`",
   "main": "index.js",
   "scripts": {
