@@ -75,12 +75,15 @@ func modifyResponse(res *http.Response) error {
 func main() {
 	proxyURL := flag.String("target", "https://jurekbarth.de", "url you want to proxy")
 	portFlag := flag.String("port", "7777", "port the proxy should listen on")
+	ignoreSSL := flag.Bool("ignoressl", false, "ignore certs")
 	cors := flag.Bool("cors", false, "enable cors")
 	flag.Parse()
 	u, err := url.Parse(*proxyURL)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: *ignoreSSL}
 
 	if u.Scheme == "" {
 		log.Fatal("missing scheme, in proxyUrl: ", *proxyURL)
@@ -91,6 +94,7 @@ func main() {
 		Host:   u.Host,
 		Path:   u.Path,
 	})
+
 	reverseProxy.Transport = &transport{}
 
 	var cert tls.Certificate
