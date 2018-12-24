@@ -97,22 +97,21 @@ func main() {
 
 	reverseProxy.Transport = &transport{}
 
+	if *cors {
+		reverseProxy.ModifyResponse = modifyResponse
+	}
+
 	var cert tls.Certificate
 	var certErr error
-
 	cert, certErr = tls.X509KeyPair(rsaCertPEM, rsaKeyPEM)
-
 	if certErr != nil {
 		log.Fatal(certErr)
 	}
 	tlsConfig := &tls.Config{Certificates: []tls.Certificate{cert}}
+
 	server := http.Server{
-		// Other options
 		Addr:      ":" + *portFlag,
 		TLSConfig: tlsConfig,
-	}
-	if *cors {
-		reverseProxy.ModifyResponse = modifyResponse
 	}
 
 	http.Handle("/", reverseProxy)
