@@ -68,7 +68,7 @@ func (t *transport) RoundTrip(req *http.Request) (*http.Response, error) {
 }
 
 func modifyResponse(res *http.Response) error {
-	res.Header.Add("Access-Control-Allow-Origin", "*")
+	res.Header.Set("Access-Control-Allow-Origin", "*")
 	return nil
 }
 
