@@ -1,7 +1,6 @@
 {
   "name": "rpgo",
-  "version": "2.0.3",
-  "description": "## Usage Use `rpgo -target=https://jurekbarth.de` and open `https://localhost:9001`",
+  "version": "3.0.0",
   "main": "index.js",
   "scripts": {
     "postinstall": "node install.js"
