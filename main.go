@@ -65,7 +65,7 @@ func loadConfig(fail bool) {
 	configLock.Unlock()
 }
 
-func GetConfig() *Config {
+func getConfig() *Config {
 	configLock.RLock()
 	defer configLock.RUnlock()
 	return config
