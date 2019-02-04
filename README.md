@@ -10,32 +10,46 @@ or use curl to install it globally without node and npm
 curl -sf https://raw.githubusercontent.com/jurekbarth/rpgo/master/install-rpgo.sh | sh
 ```
 
-Once that's done, you can run this command and open `https://localhost:7777`
+Once that's done, you can create a `config.json` file and run `rpgo`
 ```
-rpgo -target=https://jurekbarth.de`
+{
+  "version": 1,
+  "port": 1234,
+  "insecureSkipVerify": true,
+  "certs": [
+    {
+      "key": "mycert.key",
+      "cert": "mycert.crt"
+    }
+  ],
+  "proxy": [
+    {
+      "writeCors": true,
+      "proxyhost": "mydomain.local/api",
+      "host": "http://api.domain.com",
+      "rewritePath": "/api",
+      "port": 80
+    },
+    {
+      "writeCors": true,
+      "proxyhost": "mydomain.local/frontend",
+      "host": "https://frontend-domain.com/random/sub/root",
+      "rewritePath": "/frontend",
+      "port": 443
+    },
+    {
+      "writeCors": true,
+      "proxyhost": "mydomain.local",
+      "host": "http://localhost",
+      "port": 8080
+    }
+  ]
+}
 ```
 
 Finally, run this command to list all available options
 ```
 rpgo --help
-```
-
-## Configuration
-To customize rpgo's behaviour use the commandline flags
-
-### Enable Cors
-```
-rpgo -target=https://jurekbarth.de -cors
-```
-
-### Change default port
-```
-rpgo -target=https://jurekbarth.de -port=1234
-```
-
-### Ignore backend cert
-```
-rpgo -target=https://jurekbarth.de -ignoressl
 ```
 
 ## Contributing
