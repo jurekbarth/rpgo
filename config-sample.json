@@ -1,17 +1,3 @@
-# Local testing reverse proxy
-
-## Usage
-First install the package using npm (you'll need at least Node.js LTS)
-```
-npm install -g rpgo
-```
-or use curl to install it globally without node and npm
-```
-curl -sf https://raw.githubusercontent.com/jurekbarth/rpgo/master/install-rpgo.sh | sh
-```
-
-Once that's done, you can create a `config.json` file and run `rpgo`
-```
 {
   "version": 1,
   "port": 1234,
@@ -45,15 +31,3 @@ Once that's done, you can create a `config.json` file and run `rpgo`
     }
   ]
 }
-```
-
-Finally, run this command to list all available options
-```
-rpgo --help
-```
-
-## Contributing
-0. You may need some experience in go to get up and running
-1. Fork this repository to your own GitHub account and then clone it to your local device
-2. Make your branch
-3. Add your PR
