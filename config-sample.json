@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "port": 1234,
+  "insecureSkipVerify": true,
+  "certs": [
+    {
+      "key": "mycert.key",
+      "cert": "mycert.crt"
+    }
+  ],
+  "proxy": [
+    {
+      "writeCors": true,
+      "proxyhost": "mydomain.local/api",
+      "host": "http://api.domain.com",
+      "rewritePath": "/api",
+      "port": 80
+    },
+    {
+      "writeCors": true,
+      "proxyhost": "mydomain.local/frontend",
+      "host": "https://frontend-domain.com/random/sub/root",
+      "rewritePath": "/frontend",
+      "port": 443
+    },
+    {
+      "writeCors": true,
+      "proxyhost": "mydomain.local",
+      "host": "http://localhost",
+      "port": 8080
+    }
+  ]
+}

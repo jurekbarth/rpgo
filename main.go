@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"errors"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -38,12 +39,13 @@ type Config struct {
 }
 
 var (
+	configPath string
 	config     *Config
 	configLock = new(sync.RWMutex)
 )
 
 func loadConfig(fail bool) {
-	file, err := ioutil.ReadFile("config.json")
+	file, err := ioutil.ReadFile(configPath)
 	if err != nil {
 		log.Println("open config: ", err)
 		if fail {
@@ -138,6 +140,13 @@ func modifyResponse(res *http.Response) error {
 }
 
 func main() {
+	configPathInput := flag.String("config", "config.json", "path to config file")
+	flag.Parse()
+
+	configPath = "config.json"
+	if configPathInput != nil {
+		configPath = *configPathInput
+	}
 	loadConfig(true)
 
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: config.InsecureSkipVerify}
