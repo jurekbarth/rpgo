@@ -71,13 +71,20 @@ func GetConfig() *Config {
 
 type transport struct{}
 
-func getRewritePath(path string) string {
+func getRewritePath(path string) (string, string) {
 	for _, proxy := range config.Proxy {
-		if strings.HasPrefix(path, proxy.RewritePath) {
-			return proxy.RewritePath
+		host, err := url.Parse(proxy.Host)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if strings.HasPrefix(path, host.Path) {
+			strippedProxyPath := strings.TrimPrefix(path, host.Path)
+			if strings.HasPrefix(strippedProxyPath, proxy.RewritePath) {
+				return host.Path, proxy.RewritePath
+			}
 		}
 	}
-	return ""
+	return "", ""
 }
 
 func getProxyConfig(host string) (*Proxy, error) {
@@ -90,13 +97,18 @@ func getProxyConfig(host string) (*Proxy, error) {
 }
 
 func rewrite(path string) string {
-	rewritePath := getRewritePath(path)
-	return strings.TrimPrefix(path, rewritePath)
+	// Proxy Root : Rewrite Path : Real path
+	proxyRoot, rewritePath := getRewritePath(path)
+	p := strings.TrimPrefix(path, proxyRoot+rewritePath)
+	return proxyRoot + p
 }
 
 func (t *transport) RoundTrip(req *http.Request) (*http.Response, error) {
+	from := "https://" + req.Host + req.URL.Path
 	req.URL.Path = rewrite(req.URL.Path)
 	req.Host = req.URL.Host
+	to := fmt.Sprintf("%v://%v%v", req.URL.Scheme, req.Host, req.URL.Path)
+	log.Println(from, "-->", to)
 	return http.DefaultTransport.RoundTrip(req)
 }
 
