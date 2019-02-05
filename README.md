@@ -52,6 +52,9 @@ Finally, run this command to list all available options
 rpgo --help
 ```
 
+## Using RPGO with Docker
+`docker run -v ${PWD}/config.json:/root/config.json -v ${PWD}/certs:/root/certs jurekbarth/rpgo:latest`
+
 ## Contributing
 0. You may need some experience in go to get up and running
 1. Fork this repository to your own GitHub account and then clone it to your local device
