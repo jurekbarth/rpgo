@@ -16,6 +16,7 @@ Once that's done, you can create a `config.json` file and run `rpgo`
   "version": 1,
   "port": 1234,
   "insecureSkipVerify": true,
+  "https": true,
   "certs": [
     {
       "key": "mycert.key",
@@ -46,6 +47,8 @@ Once that's done, you can create a `config.json` file and run `rpgo`
   ]
 }
 ```
+
+It's possible to skip https by setting `"https: false"`.
 
 Finally, run this command to list all available options
 ```

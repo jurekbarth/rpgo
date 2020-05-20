@@ -31,6 +31,7 @@ type Config struct {
 	Version            int  `json:"version"`
 	Port               int  `json:"port"`
 	InsecureSkipVerify bool `json:"insecureSkipVerify"`
+	HTTPS              bool `json:"https"`
 	Certs              []struct {
 		Key  string `json:"key"`
 		Cert string `json:"cert"`
@@ -106,7 +107,11 @@ func rewrite(path string) string {
 }
 
 func (t *transport) RoundTrip(req *http.Request) (*http.Response, error) {
-	from := "https://" + req.Host + req.URL.Path
+	protocol := "http"
+	if config.HTTPS {
+		protocol = "https"
+	}
+	from := protocol + "://" + req.Host + req.URL.Path
 	req.URL.Path = rewrite(req.URL.Path)
 	req.Host = req.URL.Host
 	to := fmt.Sprintf("%v://%v%v", req.URL.Scheme, req.Host, req.URL.Path)
@@ -126,7 +131,11 @@ func modifyResponse(res *http.Response) error {
 		if err != nil {
 			return err
 		}
-		rewriteLocation := fmt.Sprintf("https://%v%v", proxyConf.Proxyhost, url.Path)
+		protocol := "http"
+		if config.HTTPS {
+			protocol = "https"
+		}
+		rewriteLocation := fmt.Sprintf("%v://%v%v", protocol, proxyConf.Proxyhost, url.Path)
 		url, err = url.Parse(rewriteLocation)
 		if err != nil {
 			return err
@@ -151,19 +160,22 @@ func main() {
 
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: config.InsecureSkipVerify}
 
-	cfg := &tls.Config{}
-
-	for _, certPair := range config.Certs {
-		cert, err := tls.LoadX509KeyPair(certPair.Cert, certPair.Key)
-		if err != nil {
-			log.Fatal(err)
-		}
-		cfg.Certificates = append(cfg.Certificates, cert)
-	}
 	server := http.Server{
-		Addr:      ":" + strconv.Itoa(config.Port),
-		TLSConfig: cfg,
+		Addr: ":" + strconv.Itoa(config.Port),
 	}
+	if config.HTTPS {
+		cfg := &tls.Config{}
+
+		for _, certPair := range config.Certs {
+			cert, err := tls.LoadX509KeyPair(certPair.Cert, certPair.Key)
+			if err != nil {
+				log.Fatal(err)
+			}
+			cfg.Certificates = append(cfg.Certificates, cert)
+		}
+		server.TLSConfig = cfg
+	}
+
 	var reverseProxies []*httputil.ReverseProxy
 	for _, p := range config.Proxy {
 		u, err := url.Parse(p.Host)
@@ -186,12 +198,22 @@ func main() {
 
 	for idx, p := range config.Proxy {
 		http.Handle(p.Proxyhost+"/", reverseProxies[idx])
-		fmt.Printf("Proxy: https://%v:%v --> %v:%v \n", p.Proxyhost, config.Port, p.Host, p.Port)
+		protocol := "http"
+		if config.HTTPS {
+			protocol = "https"
+		}
+		fmt.Printf("Proxy: %v://%v:%v --> %v:%v \n", protocol, p.Proxyhost, config.Port, p.Host, p.Port)
 	}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Unknown")
 	})
+	if config.HTTPS {
+		fmt.Println("Start HTTPS Server")
+		log.Fatal(server.ListenAndServeTLS("", ""))
+	} else {
+		fmt.Println("Start HTTP Server")
+		log.Fatal(server.ListenAndServe())
+	}
 
-	log.Fatal(server.ListenAndServeTLS("", ""))
 }
