@@ -5,3 +5,6 @@
 /main
 /certs
 /config.json
+localhost.crt
+localhost.key
+goreleaser
